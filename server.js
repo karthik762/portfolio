@@ -186,7 +186,13 @@ app.get('/admin', async (req, res) => {
 app.post('/admin', async (req, res) => {
     if (!req.session.isAdmin || req.body.action !== 'delete_user') return res.status(403).end();
     if (req.body.id == req.session.userId) return res.status(400).json({ success: false, message: 'Cannot delete self' });
+    
+    // Cascade delete user data first
+    await db.run('DELETE FROM projects WHERE user_id = ?', req.body.id);
+    await db.run('DELETE FROM skills WHERE user_id = ?', req.body.id);
+    await db.run('DELETE FROM experience WHERE user_id = ?', req.body.id);
     await db.run('DELETE FROM users WHERE id = ?', req.body.id);
+    
     res.json({ success: true });
 });
 
