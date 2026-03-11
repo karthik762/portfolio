@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Builder • Login</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #1e2d45;
+      --border2: #243350;
+      --text: #e2eaf8;
+      --muted: #6b7fa3;
+      --muted2: #8899bb;
+      --cyan: #00c8ff;
+      --pink: #c084fc;
+      --red: #f87171;
+      --grad: linear-gradient(135deg, #00c8ff 0%, #c084fc 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background glows */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(0, 200, 255, 0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(192, 132, 252, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Center hero text (behind card) */
+    .hero {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0.08;
+      white-space: nowrap;
+    }
+
+    /* Auth card */
+    .auth-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 1rem;
+    }
+
+    /* Logo at top */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .brand-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2rem;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 200, 255, 0.04);
+    }
+
+    .form-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.6rem;
+      letter-spacing: -0.02em;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--cyan);
+      background: #212d42;
+      box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1);
+    }
+
+    .field input::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 11px;
+      background: var(--grad);
+      color: #0b0f1a;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      transition: opacity 0.2s, transform 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.87;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .switch-row {
+      text-align: center;
+      margin-top: 1.2rem;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .switch-link {
+      color: var(--cyan);
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .switch-link:hover {
+      opacity: 0.8;
+    }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 0.8rem;
+      min-height: 20px;
+      margin-top: 0.8rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .error-msg:not(:empty)::before {
+      content: '⚠';
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0 1.2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Faint background text -->
+  <div class="hero">
+    <div class="hero-title">Portfolio Builder</div>
+  </div>
+
+  <div class="auth-wrap">
+    <div class="brand">
+      <div class="brand-name">Portfolio Builder</div>
+      <div class="brand-sub">Build your stunning professional portfolio</div>
+    </div>
+
+    <div class="auth-card">
+      <div class="form-title" id="formTitle">Welcome back</div>
+
+      <div class="field" id="nameField" style="display:none;">
+        <label>Full Name</label>
+        <input type="text" id="nameInput" placeholder="Your full name" maxlength="50">
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="emailInput" placeholder="you@example.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="passInput" placeholder="••••••••">
+      </div>
+
+      <button class="submit-btn" id="submitBtn">Login</button>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <hr class="divider">
+
+      <div class="switch-row">
+        <span id="switchText">Don't have an account?</span>
+        <span class="switch-link" id="switchBtn">Register</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if session might exist or redirect 
+    // We'll use a simple flag in sessionStorage to track 'intended' login state for the client side, 
+    // though the server session is the real authority.
+    if (sessionStorage.getItem('hbIsLoggedIn')) {
+      window.location.replace('index.html');
+    }
+
+    let isLogin = true;
+
+    const nameField = document.getElementById('nameField');
+    const nameInput = document.getElementById('nameInput');
+    const emailInput = document.getElementById('emailInput');
+    const passInput = document.getElementById('passInput');
+    const formTitle = document.getElementById('formTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const switchBtn = document.getElementById('switchBtn');
+    const switchText = document.getElementById('switchText');
+    const errorMsg = document.getElementById('errorMsg');
+
+    switchBtn.onclick = () => {
+      isLogin = !isLogin;
+      errorMsg.textContent = '';
+      if (isLogin) {
+        formTitle.textContent = 'Welcome back';
+        submitBtn.textContent = 'Login';
+        switchText.textContent = "Don't have an account?";
+        switchBtn.textContent = 'Register';
+        nameField.style.display = 'none';
+      } else {
+        formTitle.textContent = 'Create account';
+        submitBtn.textContent = 'Create Account';
+        switchText.textContent = 'Already have an account?';
+        switchBtn.textContent = 'Login';
+        nameField.style.display = 'block';
+      }
+    };
+
+    submitBtn.onclick = async () => {
+      errorMsg.textContent = '';
+      const nameVal = nameInput.value.trim();
+      const emailVal = emailInput.value.trim();
+      const passVal = passInput.value.trim();
+
+      if (!emailVal || !passVal) { errorMsg.textContent = 'Please fill all fields.'; return; }
+      if (!isLogin && !nameVal) { errorMsg.textContent = 'Enter your full name.'; return; }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = isLogin ? 'Logging in...' : 'Creating account...';
+
+      const params = new URLSearchParams();
+      params.append('action', isLogin ? 'login' : 'register');
+      params.append('email', emailVal);
+      params.append('password', passVal);
+      if (!isLogin) params.append('name', nameVal);
+
+      try {
+        const response = await fetch('auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          sessionStorage.setItem('hbIsLoggedIn', 'true');
+          sessionStorage.setItem('hbUserEmail', emailVal);
+          sessionStorage.setItem('hbUserName', result.user.name);
+          sessionStorage.setItem('hbIsAdmin', result.user.isAdmin ? 'true' : 'false');
+          window.location.replace('index.html');
+        } else {
+          errorMsg.textContent = result.message || 'Authentication failed.';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Connection error. Please try again.';
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isLogin ? 'Login' : 'Create Account';
+      }
+    };
+
+    // Enter key support
+    [nameInput, emailInput, passInput].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+    });
+  </script>
+
+</body>
+
+</html>

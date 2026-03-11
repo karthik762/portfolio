@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Builder • Admin Dashboard</title>
+    <script>
+        if (sessionStorage.getItem('hbIsLoggedIn') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: #1e2d45;
+            --text: #e2eaf8;
+            --muted: #6b7fa3;
+            --cyan: #00c8ff;
+            --grad: linear-gradient(135deg, #00c8ff 0%, #c084fc 100%);
+            --red: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: var(--cyan);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .users-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem 2rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .user-info div {
+            font-weight: 600;
+        }
+
+        .user-info small {
+            color: var(--muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(0, 200, 255, 0.1);
+            color: var(--cyan);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-red {
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--red);
+        }
+
+        .btn-red:hover {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface2);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: none;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="brand">Admin Dashboard</div>
+            <div style="display:flex; gap:1rem;">
+                <button class="btn btn-ghost" onclick="location.href='index.html'">← Back to Editor</button>
+                <button class="btn btn-ghost" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Projects</div>
+                <div class="stat-value" id="totalProjects">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Skills</div>
+                <div class="stat-value" id="totalSkills">0</div>
+            </div>
+        </div>
+
+        <div class="users-section">
+            <div class="section-header">
+                <h3 style="font-family:'Space Grotesk'">Registered Users</h3>
+                <button class="btn btn-ghost" onclick="fetchUsers()">↻ Refresh</button>
+            </div>
+            <div id="userTableWrap">
+                <table id="userTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Joined</th>
+                            <th>Data</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userList">
+                        <!-- Dynamically filled -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+
+        async function fetchUsers() {
+            try {
+                const resp = await fetch('admin?action=list_users');
+                if (resp.status === 403) {
+                    alert('Access Denied: Admin only.');
+                    window.location.replace('index.html');
+                    return;
+                }
+                const users = await resp.json();
+                renderUsers(users);
+            } catch (err) {
+                showToast('failed to fetch users');
+            }
+        }
+
+        function renderUsers(users) {
+            const list = document.getElementById('userList');
+            let totalProj = 0, totalSkills = 0;
+
+            if (!users.length) {
+                list.innerHTML = '<tr><td colspan="4" class="empty-state">No users registered yet.</td></tr>';
+                return;
+            }
+
+            list.innerHTML = users.map(u => {
+                totalProj += u.projects;
+                totalSkills += u.skills;
+                return `
+        <tr>
+          <td>
+            <div class="user-info">
+              <div>${u.name}</div>
+              <small>${u.email}</small>
+            </div>
+          </td>
+          <td>${new Date(u.joined).toLocaleDateString()}</td>
+          <td>
+            <span class="badge">${u.projects} Projects</span>
+            <span class="badge" style="background:rgba(192,132,252,0.1);color:#c084fc;">${u.skills} Skills</span>
+          </td>
+          <td>
+            <button class="btn btn-red" onclick="deleteUser(${u.id})">Delete</button>
+          </td>
+        </tr>
+      `;
+            }).join('');
+
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalProjects').textContent = totalProj;
+            document.getElementById('totalSkills').textContent = totalSkills;
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Are you sure? This delete the user and all their data forever.')) return;
+            try {
+                const resp = await fetch(`admin?action=delete_user&id=${id}`, { method: 'POST' });
+                const res = await resp.json();
+                if (res.success) {
+                    showToast('User deleted successfully');
+                    fetchUsers();
+                } else {
+                    showToast(res.message || 'Deletion failed');
+                }
+            } catch (e) { showToast('Error occurred'); }
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'logout' })
+                });
+            } catch (e) {
+                console.error('Logout request failed', e);
+            }
+            sessionStorage.clear();
+            localStorage.removeItem('hbCurrentUser');
+            localStorage.removeItem('hbIsLoggedIn');
+            localStorage.removeItem('hbUserEmail');
+            localStorage.removeItem('hbUserName');
+            localStorage.removeItem('hbIsAdmin');
+
+            window.location.replace('login.html');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        fetchUsers();
+    </script>
+
+</body>
+
+</html>

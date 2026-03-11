@@ -1,0 +1,177 @@
+/* styles.css
+   Global styles that complement index.html's dark editor shell.
+   The dark shell layout (topnav, workspace, panels) is defined inline
+   in index.html — this file handles shared utilities, theme overrides,
+   and responsive helpers.
+*/
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ===== SCROLLBAR (global) ===== */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* ===== SELECTION ===== */
+::selection {
+  background: rgba(0, 212, 255, 0.2);
+  color: #e6edf3;
+}
+
+/* ===== FOCUS VISIBLE (accessibility) ===== */
+:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== LINKS ===== */
+a {
+  color: #00d4ff;
+  transition: opacity 0.2s;
+}
+a:hover { opacity: 0.75; }
+
+/* ===== SMOOTH SCROLL ===== */
+html { scroll-behavior: smooth; }
+
+/* ===== FORM ELEMENT POLISH ===== */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="date"],
+input[type="password"],
+textarea,
+select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Date input icon fix for dark backgrounds */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* ===== BUTTON BASE ===== */
+button { font-family: inherit; cursor: pointer; }
+
+/* ===== UTILITY: SR ONLY ===== */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===== DARK THEME ===== */
+body[data-theme="dark"] {
+  --bg: #060a10;
+  --surface: #0d1117;
+  --surface2: #161b22;
+  --border: #21262d;
+}
+
+/* ===== BLUE ACCENT THEME ===== */
+body[data-theme="blue"] {
+  --cyan: #3b82f6;
+  --grad: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+body[data-theme="blue"] input:focus,
+body[data-theme="blue"] textarea:focus,
+body[data-theme="blue"] select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+body[data-theme="blue"] .skill-chip {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59,130,246,0.07);
+}
+
+/* ===== THEME CARD SELECTOR ===== */
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.theme-card {
+  background: var(--surface2, #1c2333);
+  border: 2px solid var(--border, #30363d);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.theme-card:hover {
+  border-color: rgba(0,212,255,0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.theme-card.selected {
+  border-color: var(--cyan, #00d4ff);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.15);
+}
+
+.theme-card span {
+  font-weight: 600;
+  margin-top: 0.8rem;
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text, #e6edf3);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .workspace {
+    flex-direction: column !important;
+  }
+  .editor-panel,
+  .preview-panel {
+    width: 100% !important;
+    max-height: 50vh;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border, #30363d);
+  }
+  .two-col {
+    grid-template-columns: 1fr !important;
+  }
+  .tpl-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .topnav {
+    padding: 0 1rem !important;
+    gap: 0.2rem;
+  }
+  .nav-tab {
+    padding: 0 0.7rem !important;
+    font-size: 0.78rem !important;
+  }
+  .completion-pill {
+    display: none !important;
+  }
+  .tpl-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .editor-panel,
+  .preview-panel {
+    padding: 1rem !important;
+  }
+}

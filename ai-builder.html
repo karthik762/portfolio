@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Builder - Portfolio Assistant</title>
+    <script>
+        if (sessionStorage.getItem('hbIsLoggedIn') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #040d0b;
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e2e8f0;
+            --muted: #8b9bb4;
+            --cyan: #00f5d4;
+            --cyan-glow: rgba(0, 245, 212, 0.15);
+            --cyan-dim: rgba(0, 245, 212, 0.08);
+            --purple: #9d4edd;
+            --grad-cyan: linear-gradient(135deg, #00f5d4 0%, #0ea5e9 100%);
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow: hidden;
+        }
+
+        #builder-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #preview-panel {
+            flex: 0 0 65%;
+            background: #fff;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        #preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== RIGHT PANEL — AI ASSISTANT ===== */
+        .ai-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(170deg, #0d0d18 0%, #0a0a0f 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ai-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -60px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 245, 212, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .ai-avatar-area {
+            height: 120px;
+            position: relative;
+            background: radial-gradient(ellipse at center, #131320 0%, #0a0a0f 100%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .ai-avatar-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 30px rgba(0, 245, 212, 0.2), 0 0 60px rgba(0, 245, 212, 0.05);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .ai-chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .ai-header h2 {
+            font-family: var(--font-head);
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--cyan);
+            margin-bottom: 4px;
+        }
+
+        .ai-header p {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: .8rem;
+            padding-right: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .msg {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: .9rem;
+            line-height: 1.5;
+            max-width: 90%;
+        }
+
+        .msg.ai {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            color: var(--text);
+        }
+
+        .msg.user {
+            background: linear-gradient(135deg, var(--cyan), #0ea5e9);
+            color: #040d0b;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            font-weight: 600;
+        }
+
+        .ai-input-area {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-input-wrapper {
+            display: flex;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 6px 6px 6px 18px;
+            transition: border-color .2s;
+        }
+
+        .ai-input-wrapper:focus-within {
+            border-color: var(--cyan);
+        }
+
+        #ai-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: .9rem;
+            outline: none;
+        }
+
+        #ai-send-btn {
+            background: var(--cyan-dim);
+            color: var(--cyan);
+            border: none;
+            border-radius: 99px;
+            padding: 10px 20px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        #ai-send-btn:hover {
+            background: rgba(0, 245, 212, 0.15);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            z-index: 20;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: var(--surface);
+            border-color: var(--cyan);
+        }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back-btn">← Back to Dashboard</a>
+
+    <div id="builder-container">
+        <!-- ===== LEFT PANEL — LIVE PREVIEW ===== -->
+        <div id="preview-panel">
+            <iframe id="preview-iframe" src="index.html"></iframe>
+        </div>
+
+        <!-- ===== RIGHT PANEL — AI ASSISTANT ===== -->
+        <div class="ai-panel">
+            <div class="ai-avatar-area">
+                <div class="ai-avatar-placeholder">🤖</div>
+            </div>
+            <div class="ai-chat-area">
+                <div class="ai-header">
+                    <h2>AI Resume Builder</h2>
+                    <p>Live portfolio generation</p>
+                </div>
+                <div id="chat-messages">
+                    <div class="msg ai">I'm ready! Please share your name, experience, projects, or whatever you have, and I will instantly assemble your portfolio live on the left side.<br><br>Let's start! What would you like to update?</div>
+                </div>
+                <div class="ai-input-area">
+                    <div class="ai-input-wrapper">
+                        <input type="text" id="ai-input" placeholder="Type your answer...">
+                        <button id="ai-send-btn">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The exact script which previously ran inside joes page / main page -->
+    <script type="module" src="ai-assistant.js"></script>
+</body>
+
+</html>
